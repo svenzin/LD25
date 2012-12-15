@@ -24,23 +24,31 @@ Crafty.scene("Level1", function () {
 
 	Crafty.c("Platform");
 	Crafty.c("Grabber", {
-		side: null
+		side: null,
+		range: 2
 		,
-		Grabber: function(side) {
-			this.requires("GrabHold, Collision, WiredHitBox")
+		Grabber: function(px, py, side) {
+			var x = px - this.range;
+			var y = py;
+			var w = 2 * this.range;
+			var h = 2 * this.range;
+			if (side == "Right") { x = px + 32 - this.range; }
+			
+			this.requires("2D, Collision, WiredHitBox")
+				.attr({ x: x, y: y, h: h, w: w })
+				.collision([0, 0], [0, h], [w, h], [w, 0]);
 			this.side = side;
-			if (side == "Left") { this.collision([0, 0], [0, 8], [8, 8], [8, 0]); }
-			else if (side == "Right") { this.collision([26, 0], [26, 8], [32, 8], [32, 0]); }
+			
 			return this;
 		}
 		,
 		GrabX: function() {
-			if (this.side == "Left") { return this.x; }
-			else if (this.side == "Right") { return this.x + 32; }
+			if      (this.side == "Left")  { return this.x + 2 * this.range - 28; }
+			else if (this.side == "Right") { return this.x ; }
 		}
 		,
 		GrabY: function() {
-			if (this.side == "Left") { return this.y; }
+			if      (this.side == "Left")  { return this.y; }
 			else if (this.side == "Right") { return this.y; }
 		}
 	});
@@ -53,7 +61,7 @@ Crafty.scene("Level1", function () {
 			[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 0, 2, 3, 0, 0, 0, 0, 2, 3, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
-			[5, 2, 1, 1, 3, 0, 0, 0, 0, 0, 0, 2, 1, 1, 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
+			[5, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
@@ -62,7 +70,7 @@ Crafty.scene("Level1", function () {
 			[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 0, 2, 3, 0, 0, 0, 0, 2, 3, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
-			[5, 2, 1, 1, 3, 0, 0, 0, 0, 0, 0, 2, 1, 1, 3, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
+			[5, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6]
 		];
@@ -70,16 +78,13 @@ Crafty.scene("Level1", function () {
 		for (var j = 0; j < level.length; j++) {
 			for (var i = 0; i < level[j].length; i++) {
 				if (level[j][i] != 0) {
+					var x = 32 * i;
+					var y = 32 * j;
 					
-					Crafty.e("2D, DOM, Platform" + level[j][i] + ", Platform")
-						.attr({ x: 32 * i, y: 32 * j });
+					Crafty.e("2D, DOM, Platform" + level[j][i] + ", Platform").attr({ x: x, y: y });
 					
-					if (level[j][i] == 2) {
-						Crafty.e("2D, DOM, Grabber").attr({ x: 32 * i, y: 32 * j }).Grabber("Left");
-					} else if (level[j][i] == 3) {
-						Crafty.e("2D, DOM, Grabber").attr({ x: 32 * i, y: 32 * j }).Grabber("Right");
-					}
-
+					if      (level[j][i] == 2) { Crafty.e("Grabber").Grabber(x, y, "Left"); }
+					else if (level[j][i] == 3) { Crafty.e("Grabber").Grabber(x, y, "Right"); }
 				}
 			};
 		};
@@ -102,7 +107,10 @@ Crafty.scene("Level1", function () {
 				if (arg.x < 0 && !this.isPlaying("WalkLeft")) { this.stop().animate("WalkLeft", 30, -1); }
 				if (arg.x == 0 && !this.isPlaying("Idle")) { this.stop().animate("Idle", 30, -1); }
 
-				if (arg.grab && !this.isPlaying("GrabLeft")) { this.stop().animate("GrabLeft", 30, -1); }
+				if (arg.grab) {
+					if (arg.x > 0 && !this.isPlaying("GrabLeft")) { this.stop().animate("GrabLeft", 30, -1); }
+					if (arg.x < 0 && !this.isPlaying("GrabRight")) { this.stop().animate("GrabRight", 30, -1); }
+				}
 			})
 			;
 
@@ -129,6 +137,14 @@ Crafty.scene("Level1", function () {
 	// 		})
 	// 	}
 	// });
+	Crafty.c("HitBox", {
+		HitBox: function(x, y, w, h) {
+			this.requires("2D, Collision, WiredHitBox")
+				.attr({ x: x, y: y, w: w, h: h })
+				.collision([0, 0], [0, h], [w, h], [w, 0]);
+			return this;
+		}
+	});
 	Crafty.c("Controller", {
 		Controller: function () {
 			this._oldx = this.x;
@@ -137,14 +153,23 @@ Crafty.scene("Level1", function () {
 
 			this._jump = 0;
 			this._grab = 0;
+			this._grablock = false;
+
+			this._lhand = Crafty.e("HitBox").HitBox(0, 0, 4, 4);
+			this._rhand = Crafty.e("HitBox").HitBox(24, 0, 4, 4);
 			
 			this.requires("Keyboard, Collision, WiredHitBox")
-			.collision([0, 0], [0, 30], [30, 30], [30, 0])
+			// .collision([3, 4], [3, 29], [27, 29], [27, 4])
+			.collision([16, 16], [16, 17], [17, 17], [17, 16])
+			.attach(this._lhand)
+			.attach(this._rhand)
 			.bind("KeyDown", function() {
 				if (this.isDown("UP_ARROW")) {
 					if (this._jump == 0) {
 						this._oldy = this.y + 8;
 						this._jump = 1;
+						this._grab = 0;
+						this._grablock = true;
 						Crafty.audio.play("Jump");
 					}
 					else if (this._jump == 1) {
@@ -153,42 +178,59 @@ Crafty.scene("Level1", function () {
 						Crafty.audio.play("Jump");
 					}
 				}
+				if (this.isDown("DOWN_ARROW")) {
+					if (this._grab == 1) {
+						this._jump = 0;
+						this._grab = 0;
+						this._grablock = true;
+					}
+				}
 			})
 			.bind("EnterFrame", function () {
 				
-				var safex = this.x; var safey = this.y;
+				var safex = this.x;
+				var safey = this.y;
 
 				if (this._grab == 1) {
 
 				} else {
-					this.y += this._g + safey - this._oldy;//(this.y - this._old.y) + this._g;
+					this.shift(0, this._g + safey - this._oldy);//(this.y - this._old.y) + this._g;
 					
-					var grabbed = this.hit("Grabber");
-					// console.log(grabbed);
+					if (this.isDown("LEFT_ARROW")) { this.shift(-2, 0); }
+					if (this.isDown("RIGHT_ARROW")) { this.shift(2, 0); }
+					// if (this.isDown("LEFT_ARROW")) { this.x -= 2; }
+					// if (this.isDown("RIGHT_ARROW")) { this.x += 2; }
+
+					var grabbed = this._rhand.hit("Grabber") || this._lhand.hit("Grabber");
+					console.log(this._grablock);
 					if (grabbed) {
-						var o = grabbed[0].obj;
-						console.log(o);
-						console.log(o.x);
-						console.log(o.y);
-						this.x = o.GrabX();
-						this.y = o.GrabY();
-						if (o.side == "Left") {
-						} else if (o.side == "Right") {
-							// this.x += 16;
+						if (!this._grablock) {
+							var o = grabbed[0].obj;
+							console.log(o);
+							console.log(o.x);
+							console.log(o.y);
+							this.x = o.GrabX();
+							this.y = o.GrabY();
+							if (o.side == "Left") {
+								this._oldx = this.x + 1;
+							} else if (o.side == "Right") {
+								this._oldx = this.x - 1;
+							}
+							this._oldy = this.y;
+							this._grab = 1;
+							this._jump = 0;
 						}
-						this._grab = 1;
+					} else {
+						this._grablock = false;
 					}
 
 					if (this._grab == 0) {					
-						// if (this.hit("Platform")) {
-							// this.y = safey;
-							// this._jump = 0;
-						// }
+						if (this.hit("Platform")) {
+							this.y = safey;
+							this._jump = 0;
+						}
 						
-						if (this.isDown("LEFT_ARROW")) { this.x -= 2; }
-						if (this.isDown("RIGHT_ARROW")) { this.x += 2; }
-
-						// if (this.hit("Platform")) { this.x = safex;  }
+						if (this.hit("Platform")) { this.x = safex;  }
 
 						this._oldx = safex; this._oldy = safey;
 					}
@@ -206,9 +248,10 @@ Crafty.scene("Level1", function () {
 		}
 	});
 	Crafty.e("2D, DOM, Controller, Character")
-		.attr({ x: 50, y: 50 })
-		.Controller()
+		
 		.Character()
+		.Controller()
+		.attr({ x: 50, y: 50 })
 		;
 
 });
