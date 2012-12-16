@@ -7,12 +7,9 @@ Crafty.scene("MainMenu", function () {
 		PlaySelected: [0, 2, 5, 2]
 	});
 
-	Crafty.audio.add("BGM", "assets/bgm.mp3");
-	Crafty.audio.add("Select", "assets/select.mp3");
-	
 	Crafty.audio.play("BGM", -1, 0.2);
 	
-	Crafty.e("2D, DOM, Mouse, Sprite, Play")
+	Crafty.e("2D, Canvas, Mouse, Sprite, Play")
 		.attr({ x: 400, y: 350})
 		.sprite(0, 0, 5, 2)
 		.bind("MouseOver", function () { this.sprite(0, 2, 5, 2); Crafty.audio.play("Select", 1); })

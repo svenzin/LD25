@@ -3,6 +3,8 @@ Crafty.scene("Level1", function () {
 	Crafty.background("rgb(128, 128, 128)");
 	// Crafty.viewport.scale(2);
 
+	console.log(Crafty.asset("assets/Level.png"));
+
 	Crafty.sprite(32, "assets/Level.png", {
 		Platform1: [0, 0],
 		Platform2: [1, 0],
@@ -18,14 +20,10 @@ Crafty.scene("Level1", function () {
 		Idle: [0, 0],
 	});
 
-	Crafty.audio.add("BGM", "assets/bgm.mp3");
-	Crafty.audio.add("Jump", "assets/jump.mp3");
-	Crafty.audio.add("Slide", "assets/slide.mp3");
-
 	Crafty.c("Platform");
 	Crafty.c("Grabber", {
 		side: null,
-		range: 2
+		range: 4
 		,
 		Grabber: function(px, py, side) {
 			var x = px - this.range;
@@ -43,8 +41,8 @@ Crafty.scene("Level1", function () {
 		}
 		,
 		GrabX: function() {
-			if      (this.side == "Left")  { return this.x + 2 * this.range - 28; }
-			else if (this.side == "Right") { return this.x ; }
+			if      (this.side == "Left")  { return this.x + this.range - 28; }
+			else if (this.side == "Right") { return this.x + this.range; }
 		}
 		,
 		GrabY: function() {
@@ -63,7 +61,6 @@ Crafty.scene("Level1", function () {
 			[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 2, 1, 1, 1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
-			[4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
 			[5, 0, 0, 0, 0, 2, 1, 1, 1, 1, 3, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
@@ -81,7 +78,7 @@ Crafty.scene("Level1", function () {
 					var x = 32 * i;
 					var y = 32 * j;
 					
-					Crafty.e("2D, DOM, Platform" + level[j][i] + ", Platform").attr({ x: x, y: y });
+					Crafty.e("2D, Canvas, Platform" + level[j][i] + ", Platform").attr({ x: x, y: y, z: 2 });
 					
 					if      (level[j][i] == 2) { Crafty.e("Grabber").Grabber(x, y, "Left"); }
 					else if (level[j][i] == 3) { Crafty.e("Grabber").Grabber(x, y, "Right"); }
@@ -90,7 +87,7 @@ Crafty.scene("Level1", function () {
 		};
 	}
 
-	//Crafty.audio.play("BGM", -1, 0.5);
+	Crafty.audio.play("BGM", -1, 0.5);
 	GenerateLevel();
 
 	Crafty.c("Character", {
@@ -108,6 +105,12 @@ Crafty.scene("Level1", function () {
 				if (arg.x == 0 && !this.isPlaying("Idle")) { this.stop().animate("Idle", 30, -1); }
 
 				if (arg.grab) {
+					if (arg.x > 0 && !this.isPlaying("GrabLeft")) { this.stop().animate("GrabLeft", 30, -1); }
+					if (arg.x < 0 && !this.isPlaying("GrabRight")) { this.stop().animate("GrabRight", 30, -1); }
+				}
+
+				if (arg.slide) {
+					// this.stop().animate("GrabLeft", 30, -1);
 					if (arg.x > 0 && !this.isPlaying("GrabLeft")) { this.stop().animate("GrabLeft", 30, -1); }
 					if (arg.x < 0 && !this.isPlaying("GrabRight")) { this.stop().animate("GrabRight", 30, -1); }
 				}
@@ -150,13 +153,16 @@ Crafty.scene("Level1", function () {
 			this._oldx = this.x;
 			this._oldy = this.y;
 			this._g = 0.4;
+			this._s = 3;
 
 			this._jump = 0;
+			this._maxjump = 2;
+			this._slide= 0;
 			this._grab = 0;
 			this._grablock = false;
 
-			this._lhand = Crafty.e("HitBox").HitBox(0, 0, 4, 4);
-			this._rhand = Crafty.e("HitBox").HitBox(24, 0, 4, 4);
+			this._lhand = Crafty.e("HitBox").HitBox(0, 0, 8, 8);
+			this._rhand = Crafty.e("HitBox").HitBox(20, 0, 8, 8);
 			
 			this.requires("Keyboard, Collision, WiredHitBox")
 			// .collision([3, 4], [3, 29], [27, 29], [27, 4])
@@ -169,12 +175,13 @@ Crafty.scene("Level1", function () {
 						this._oldy = this.y + 8;
 						this._jump = 1;
 						this._grab = 0;
+						this._slide= 0;
 						this._grablock = true;
 						Crafty.audio.play("Jump");
 					}
-					else if (this._jump == 1) {
+					else if (this._jump < this._maxjump) {
 						this._oldy = this.y + 8;
-						this._jump = 1;
+						this._jump += 1;
 						Crafty.audio.play("Jump");
 					}
 				}
@@ -192,17 +199,11 @@ Crafty.scene("Level1", function () {
 				var safey = this.y;
 
 				if (this._grab == 1) {
-
+					// var grabbed = this._rhand.hit("Grabber") || this._lhand.hit("Grabber");
+					// console.log("true and " + !!grabbed);
 				} else {
-					this.shift(0, this._g + safey - this._oldy);//(this.y - this._old.y) + this._g;
-					
-					if (this.isDown("LEFT_ARROW")) { this.shift(-2, 0); }
-					if (this.isDown("RIGHT_ARROW")) { this.shift(2, 0); }
-					// if (this.isDown("LEFT_ARROW")) { this.x -= 2; }
-					// if (this.isDown("RIGHT_ARROW")) { this.x += 2; }
-
 					var grabbed = this._rhand.hit("Grabber") || this._lhand.hit("Grabber");
-					console.log(this._grablock);
+					// console.log("false and " + !!this._grablock);
 					if (grabbed) {
 						if (!this._grablock) {
 							var o = grabbed[0].obj;
@@ -219,18 +220,37 @@ Crafty.scene("Level1", function () {
 							this._oldy = this.y;
 							this._grab = 1;
 							this._jump = 0;
+							this._slide= 0;
 						}
 					} else {
 						this._grablock = false;
 					}
 
-					if (this._grab == 0) {					
+					if (this._grab == 0) {
+						if (this._slide) {
+							this.y += this._slide;//(this.y - this._old.y) + this._g;
+						} else {
+							this.y += this._g + safey - this._oldy - this._slide;//(this.y - this._old.y) + this._g;
+						}
+
 						if (this.hit("Platform")) {
 							this.y = safey;
 							this._jump = 0;
 						}
 						
-						if (this.hit("Platform")) { this.x = safex;  }
+						if (this.isDown("LEFT_ARROW")) { this.x -= this._s; }
+						if (this.isDown("RIGHT_ARROW")) { this.x += this._s; }
+
+						this._slide = 0;
+						if (this.hit("Platform"))
+						{
+							this.x = safex;
+							if (this.y - safey > 0)
+							{
+								this._slide = 1;
+								this._jump = 0;
+							}
+						}
 
 						this._oldx = safex; this._oldy = safey;
 					}
@@ -239,7 +259,8 @@ Crafty.scene("Level1", function () {
 						x: this.x - this._oldx,
 						y: this.y - this._oldy,
 						jump: this._jump,
-						grab: this._grab });
+						grab: this._grab,
+						slide:this._slide });
 				}
 			})
 			;
@@ -247,11 +268,11 @@ Crafty.scene("Level1", function () {
 			return this;
 		}
 	});
-	Crafty.e("2D, DOM, Controller, Character")
+	Crafty.e("2D, Canvas, Controller, Character")
 		
 		.Character()
 		.Controller()
-		.attr({ x: 50, y: 50 })
+		.attr({ x: 50, y: 50, z: 10 })
 		;
 
 });
