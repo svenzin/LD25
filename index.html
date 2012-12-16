@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <head>	
-	<script type="text/javascript" src="libs/mycrafty.js"></script>
+	<script type="text/javascript" src="libs/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="libs/crafty-min.js"></script>
 	<script type="text/javascript" src="src/loader.js"></script>
 	<script type="text/javascript" src="src/menu.js"></script>
+	<script type="text/javascript" src="src/global.js"></script>
+	<script type="text/javascript" src="src/level0.js"></script>
 	<script type="text/javascript" src="src/level1.js"></script>
 </head>
 <body>
 	<script type="text/javascript">
-Crafty.init(960, 540);
+// Crafty.init(960, 540);
+Crafty.init(20*32, 10*32);
 // Crafty.canvas.init();
 Crafty.scene("Loader");
 	</script>
